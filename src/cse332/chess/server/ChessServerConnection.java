@@ -277,7 +277,7 @@ public class ChessServerConnection extends Thread {
                                     }
                                 break;
                                 case "ILLEGAL":
-                                    if (!iWon && !nick.equals(winner)) {
+                                    if (!iWon && !hub.gameState.imPlaying) {
                                         hub.addMessage(winner + " won!"); 
                                     }
                                     else if (iWon) {
@@ -288,7 +288,7 @@ public class ChessServerConnection extends Thread {
                                     }
                                 break;
                                 case "NOTIME":
-                                    if (!iWon && !nick.equals(winner)) {
+                                    if (!iWon && !hub.gameState.imPlaying) {
                                         hub.addMessage(winner + " won!"); 
                                     }
                                     else if (iWon) {
@@ -300,7 +300,7 @@ public class ChessServerConnection extends Thread {
 
                                 break;
                                 case "CHECKMATE":
-                                    if (!iWon && !nick.equals(winner)) {
+                                    if (!iWon && !hub.gameState.imPlaying) {
                                         hub.addMessage(winner + " won!"); 
                                     }
                                     else if (iWon) {
@@ -335,7 +335,7 @@ public class ChessServerConnection extends Thread {
                     channel = parts[parts.length - 1]; 
                     if (who.equals(CHESS_RUNNER)) {
                         // If I REQUESTED, just join the channel
-                        if (this.gameChannel != null && this.gameChannel.equals("REQUESTED")) {
+                        if (this.gameChannel != null) {
                             this.gameChannel = channel;
                             write("JOIN", gameChannel);
                         }

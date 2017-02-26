@@ -266,17 +266,13 @@ public final class GamePanel extends JPanel implements Observer {
                 board.clearPending();
                 try {
                     board.doSmithMove(smith);
+                    m_player.applyMove(smith);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 board.repaint();
 
                 if (amPlaying) {
-                    try {
-                        m_player.applyMove(smith);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     doRun();
                 }
             }
