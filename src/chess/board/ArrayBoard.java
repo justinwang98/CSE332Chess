@@ -2551,10 +2551,6 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
 				}
 			}
 		}
-		
-        if (move.isPromotion()) {
-        	moveString.append(move.promote.toString().toUpperCase());
-        }
 
         if (move.isPromotion()) {
 			moveString.append(move.promote.toString().toUpperCase());
