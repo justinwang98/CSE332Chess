@@ -95,7 +95,8 @@ public class TrafficPosition implements Board<RoadSegment,TrafficPosition> {
     @Override
     public TrafficPosition copy() {
         TrafficPosition copy = create();
-        copy.locations = (Stack<RoadSegment>) new Vector<RoadSegment>(this.locations);
+        copy.locations = new Stack<RoadSegment>();
+        copy.locations.addAll(this.locations);
         copy.secondsDriving = this.secondsDriving;
         copy.secondsLostToTraffic = this.secondsLostToTraffic;
         copy.myMove = this.myMove;
