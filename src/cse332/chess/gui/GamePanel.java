@@ -342,7 +342,6 @@ public final class GamePanel extends JPanel implements Observer {
             String ur_move = m_player.computeMove((int) lowerClock.msecleft,
                     (int) upperClock.msecleft);
             if (ur_move != null && amPlaying) {
-                hub.pendingMove = ur_move;
                 hub.sendCmdArgs("MOVE", ur_move);
             }
         }
