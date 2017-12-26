@@ -161,7 +161,7 @@ public final class GamePanel extends JPanel implements Observer {
                 board.newGame();
             } 
             else {
-                board.newGame(hub.gameState.board);
+                board.setBoard(hub.gameState.board);
                 lowerClock.setClock(Long.parseLong(hub.gameState.whiteTime));
                 upperClock.setClock(Long.parseLong(hub.gameState.blackTime));
                 if (hub.gameState.currentPlayer.equals("w")) {
@@ -216,7 +216,9 @@ public final class GamePanel extends JPanel implements Observer {
             break;
 
         case "MADE_MOVE":
-            String smith = ((String) value);
+        	String[] parsed = ((String)value).split("&");
+            String boardFEN = parsed[0];
+            String move = parsed[1];
             // You are always the lower player
             if (lowersTurn) {
                 boolean actLikeWhite = hub.gameState.imWhite;
@@ -237,11 +239,12 @@ public final class GamePanel extends JPanel implements Observer {
 
                 board.clearPending();
                 System.out.println("doing move...");
-                board.doSmithMove(smith);
+                board.setBoard(boardFEN);
+                board.highlightMove(move);
                 board.repaint();
 
                 if (amPlaying) {
-                    m_player.applyMove(smith);
+                    m_player.applyMove(move);
                 }
             } else {
                 boolean actLikeWhite = hub.gameState.imWhite;
@@ -259,14 +262,15 @@ public final class GamePanel extends JPanel implements Observer {
                 lowerClock.startClock();
                 lowersTurn = true;
                 
-                if (smith.equals("(none)")) {
+                if (move.equals("(none)")) {
                     return;
                 }
 
                 board.clearPending();
                 try {
-                    board.doSmithMove(smith);
-                    m_player.applyMove(smith);
+                    board.setBoard(boardFEN);
+                    board.highlightMove(move);
+                    m_player.applyMove(move);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class ChessServerConnection extends Thread {
-    private final static String SERVER = "chess.countablethoughts.com";
+    private final static String SERVER = "cse332-chess.ddns.net";
     private final static String SERVER_PASSWORD = "jTeaT.xdcLJG4Kk>>H2TNZ4eeb}Da7";
     public final static String CHESS_RUNNER = "chezz";
     public final static String CHAT_CHANNEL = "#main";
@@ -44,6 +44,7 @@ public class ChessServerConnection extends Thread {
         String line = null;
         boolean logged_in = false;
         while ((line = in.readLine()) != null) {
+        	try {
             int code = Integer.parseInt(line.split(" ")[1]);
             switch (code) {
             case IRCCodes.RplMyInfo:
@@ -59,6 +60,8 @@ public class ChessServerConnection extends Thread {
             if (logged_in) {
                 break;
             }
+        	}
+        	catch (Exception e) {}
         }
 
         // Join the channel and authenticate.
@@ -94,7 +97,7 @@ public class ChessServerConnection extends Thread {
                     m_channel(gameChannel, text);
                 break;
                 case "MOVE":
-                    m_channel(gameChannel, "\u0001ACTION " + text + "\u0001");
+                    m_channel(gameChannel.replace(":", ""), "\u0001ACTION " + text + "\u0001");
                 break;
                 default:
                     String[] parts = text.split(" ", 2);

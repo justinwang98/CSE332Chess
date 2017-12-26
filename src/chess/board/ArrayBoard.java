@@ -12,7 +12,6 @@ import cse332.chess.interfaces.Board;
 import cse332.chess.interfaces.Iteratorable;
 import cse332.chess.interfaces.Predicate;
 import static chess.board.ArrayPiece.*;
-
 /**
  * @author Owen Durni (opd@andrew.cmu.edu)
  * 
@@ -842,7 +841,6 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
   			moves.add(m);
   		}
   	}
-  	
   	return moves;
   }
   
@@ -1190,7 +1188,7 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
   	applyMove(move);
   	boolean legal = !inCheck(ME);
   	undoMove();
-  	
+
   	return legal;
   }
   
@@ -1555,103 +1553,19 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
   	ArrayPiece source  = board[s];
   	ArrayPiece dest    = board[d];
   	
-  	Character promoteChar;
-    Character captureChar;
+  	Character promoteChar = null;
   	
-    //no capture, promote, castle, or enpassant
-    if( t.length() == 4 )
+    // promotion
+    if( t.length() >= 5 )
     {
-      assert( !(d == enpassantSquare && !dest.isOccupied() && source.type() == PAWN) ) : "Smith string `E` suffix missing";
-      assert( dest.isEmpty() ) : "Smith string missing suffix of captured piece";
-      promoteChar = null;
-      captureChar = null;
+      promoteChar = t.charAt(4);
     }
-    else
-    {
-      assert( t.length() > 4 );
-      char c4 = t.charAt(4);
-      
-      switch( c4 )
-      {
-      /* Castling */
-      case 'C':
-      case 'c':
-        assert( t.length() == 5 );
-        assert( source.type() == KING );
-        assert( dest.isEmpty() );
-        captureChar = null; //can't capture on a castle
-        promoteChar = null; //can't promote on a castle
-      break;
-        
-      /* En passant */
-      case 'E':
-        assert( t.length() == 5 );
-        assert( source.type() == PAWN );
-        assert( enpassantSquare == dest.square );
-        assert( dest.isEmpty() );
-        assert( dest.row() == 2 || dest.row() == 5 );
-        captureChar = c4;   //capture on enpassant, but you move to an empty square
-        promoteChar = null; //can't promote on an enpassant
-      break;
-        
-      /* Promotion, but not capture */
-      case 'Q':
-      case 'R':
-      case 'B':
-      case 'N':
-        assert( source.type() == PAWN );
-        assert( dest.isEmpty() );
-        promoteChar = c4;
-        captureChar = null;
-      break;
-      
-      /* Capture */
-      case 'k':
-      case 'q':
-      case 'r':
-      case 'b':
-      case 'n':
-      case 'p':
-        assert( dest.isOccupied() );
-        assert( dest.toString().toLowerCase().equals( ""+c4 ));
-        captureChar = c4;
-        
-        /* Capture, no Promotion */
-        if( t.length() == 5 )
-        {
-          promoteChar = null;
-        }
-        else /* Capture and Promotion */
-        {
-          char c5 = t.charAt(5);
-          
-          switch( c5 )
-          {
-          case 'Q':
-          case 'R':
-          case 'B':
-          case 'N':
-            promoteChar = c5;
-          break;
-          
-          default:
-            throw new IllegalArgumentException(
-              "Bad Smith move string; unrecognized 6th character:" + t);
-          }
-        }
-      break; //end capture
-      
-      default:
-        throw new IllegalArgumentException(
-          "Bad Smith move string; unrecognized 5th character" + t);
-      }
-    }  	
   	
     //
     // Actually make the move
     //
     ArrayPiece promote = null;
-    boolean    capture = (captureChar != null);
+    boolean capture = !dest.isEmpty() || (source.type() == PAWN && dest.square == enpassantSquare);
     
   	//if the move is a promotion
   	if( promoteChar != null )
@@ -2539,7 +2453,7 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
 		int srcsq = srcpiece.square;
 		int destsq = destpiece.square;
 
-		// castle moves are a special case
+		/*// castle moves are a special case
 		if (srcpiece.type() == KING) {
 			if (colOfSquare(srcsq) == 4) {
 				if (colOfSquare(destsq) == 6) {
@@ -2550,10 +2464,10 @@ public class ArrayBoard implements Board<ArrayMove,ArrayBoard>
 					moveString.append("C");
 				}
 			}
-		}
+		}*/
 
         if (move.isPromotion()) {
-			moveString.append(move.promote.toString().toUpperCase());
+			moveString.append(move.promote.toString().toLowerCase());
 		}
 
 		return moveString.toString();
