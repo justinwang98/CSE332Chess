@@ -149,8 +149,8 @@ public class Hub extends JPanel {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            String move = gameState.board + "&" + gameState.lastMove;
-            gamePanel.receive("MADE_MOVE", move);
+            String boardAndMove = gameState.board + "&" + gameState.lastMove;
+            gamePanel.receive("MADE_MOVE", boardAndMove);
             
             if (!gameState.imPlaying) {
                 gamePanel.receive("STARTED_OBSERVING", myName);
