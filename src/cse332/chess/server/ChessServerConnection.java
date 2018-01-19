@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 public class ChessServerConnection extends Thread {
-    private final static String SERVER = "cse332-chess.ddns.net";
+    private final static String SERVER = "chess.countablethoughts.com";
     private final static String SERVER_PASSWORD = "jTeaT.xdcLJG4Kk>>H2TNZ4eeb}Da7";
     public final static String CHESS_RUNNER = "chezz";
     public final static String CHAT_CHANNEL = "#main";
