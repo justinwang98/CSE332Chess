@@ -10,11 +10,10 @@ import cse332.chess.interfaces.Move;
 import java.util.concurrent.RecursiveTask;
 import cse332.chess.interfaces.Evaluator;
 
-// 2/21
 public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
-	private static final int divideCutoff = 4;
+	private static final int divideCutoff = 3;
 	private static final ForkJoinPool POOL = new ForkJoinPool();
 	
 	public M getBestMove(B board, int myTime, int opTime) {
