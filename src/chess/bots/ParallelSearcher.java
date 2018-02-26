@@ -10,10 +10,13 @@ import cse332.chess.interfaces.Move;
 import java.util.concurrent.RecursiveTask;
 import cse332.chess.interfaces.Evaluator;
 
-// 2/21
 public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
+<<<<<<< HEAD
+=======
+	private static final int divideCutoff = 3;
+>>>>>>> branch 'master' of ssh://git@gitlab.cs.washington.edu/cse332-18wi/p3-gauntletlegends.git
 	private static final ForkJoinPool POOL = new ForkJoinPool();
 	private static final int divideCutoff = 3;
 	
