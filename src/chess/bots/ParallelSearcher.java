@@ -13,10 +13,6 @@ import cse332.chess.interfaces.Evaluator;
 public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
-<<<<<<< HEAD
-=======
-	private static final int divideCutoff = 3;
->>>>>>> branch 'master' of ssh://git@gitlab.cs.washington.edu/cse332-18wi/p3-gauntletlegends.git
 	private static final ForkJoinPool POOL = new ForkJoinPool();
 	private static final int divideCutoff = 3;
 	
