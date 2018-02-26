@@ -15,12 +15,12 @@ public class SimpleSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 
     public M getBestMove(B board, int myTime, int opTime) {
-        /* Calculate the best move */
-        BestMove<M> best = minimax(this.evaluator, board, ply);
+    	
+        BestMove<M> best = minimax(board, ply, evaluator);
         return best.move;
     }
 
-    static <M extends Move<M>, B extends Board<M, B>> BestMove<M> minimax(Evaluator<B> evaluator, B board, int depth) {
+    public static <M extends Move<M>, B extends Board<M, B>> BestMove<M> minimax(B board, int depth, Evaluator<B> evaluator) {
     	
     	// p is a leaf
     	if (depth == 0) {
@@ -46,7 +46,7 @@ public class SimpleSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		board.applyMove(move);
     		
     		//int value = -minimax(p)
-    		int value = -(minimax(evaluator, board, depth - 1)).value; 
+    		int value = -(minimax(board, depth - 1, evaluator)).value; 
     		
     		board.undoMove();
     		

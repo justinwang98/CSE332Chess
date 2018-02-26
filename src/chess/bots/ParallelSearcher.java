@@ -14,23 +14,24 @@ import cse332.chess.interfaces.Evaluator;
 public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
-	private static final int divideCutoff = 4;
 	private static final ForkJoinPool POOL = new ForkJoinPool();
+	private static final int divideCutoff = 3;
 	
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
 		
 		//using the cutoff instance variable in AbstractSearcher
-    	return (POOL.invoke(new GetBestMoveTask(this.evaluator, board, ply, 
-    			moves, cutoff, divideCutoff, 0, moves.size(), null))).move; 
+		BestMove<M> best = POOL.invoke(new GetBestMoveTask(board, ply, moves, cutoff,
+				divideCutoff, 0, moves.size(), null, evaluator)); 
+		return best.move;
     }
 	
 	class GetBestMoveTask extends RecursiveTask<BestMove<M>> {
-		Evaluator<B> evaluator;
+		
 		B board;
     	int depth;
     	
-    	List<M> moves; 
+    	List<M> moveList; 
     	
     	int sequentialCutOff;
     	int divideCutoff;
@@ -39,16 +40,18 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
     	int lo;
     	int hi;
     	M move;
+    	
+    	Evaluator<B> evaluator;
 		
     	//constructor
-    	public GetBestMoveTask(Evaluator<B> evaluator, B board, int depth,
-    			List<M> moves, int sequentialCutOff, int divideCutoff, int lo, int hi, M move) {
+    	public GetBestMoveTask(B board, int depth, List<M> moveList,
+    			int sequentialCutOff, int divideCutoff, int lo, int hi, M move, Evaluator<B> evaluator) {
     		
     		this.evaluator = evaluator;	
     		this.board = board;
     		this.depth = depth;
     		
-    		this.moves = moves;  
+    		this.moveList = moveList;  
     		
     		this.sequentialCutOff = sequentialCutOff;
     		this.divideCutoff = divideCutoff;
@@ -64,48 +67,53 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		if (move != null) {
     			board = board.copy();
         		board.applyMove(move);
-        		moves = board.generateMoves();
-        		hi = moves.size();	
+        		moveList = board.generateMoves();
+        		hi = moveList.size();	
     		}
     		
     		// sequential
-    		if (depth <= sequentialCutOff || moves.isEmpty()) {
-    			return SimpleSearcher.minimax(evaluator, board, depth);
+    		if (depth <= sequentialCutOff) {
+    			return SimpleSearcher.minimax(board, depth, evaluator);
     		}
     		
 			// make the moves, then parallelize each move to get the best move
 			if (hi - lo <= divideCutoff) {
 				
 				BestMove<M> bestMove = new BestMove<M>(-evaluator.infty());
-				ArrayList<GetBestMoveTask> tasks = new ArrayList<GetBestMoveTask>();
+				ArrayList<GetBestMoveTask> tasksList = new ArrayList<GetBestMoveTask>();
 				
 				//add all the tasks, note that these are sequential tasks (lo = 0 = hi)
 				for (int i = lo; i < hi; i++) {
-					tasks.add(new GetBestMoveTask (evaluator, board, depth - 1,
-							moves, sequentialCutOff, divideCutoff, 0, 0, moves.get(i)));
+					GetBestMoveTask task = new GetBestMoveTask (board, depth - 1, moveList,
+							sequentialCutOff, divideCutoff, 0, 0, moveList.get(i), evaluator);
+					tasksList.add(task);
 				}
 				
 				//fork all the tasks
-				for (int i = 1; i < tasks.size(); i++) {
-					tasks.get(i).fork();
+				for (int i = 1; i < tasksList.size(); i++) {
+					tasksList.get(i).fork();
 				}
 				
+				int bestValue;
+				
+				//compute the first task
+				bestValue = tasksList.get(0).compute().negate().value;
+				
+				//update best value
+				if (bestValue > bestMove.value) {
+					bestMove.move = moveList.get(0 + lo);
+					bestMove.value = bestValue;
+				}	
+				
 				//finding best value for each task
-				for (int i = 0; i < tasks.size(); i++) {
+				for (int i = 1; i < tasksList.size(); i++) {
 					
-					int bestValue;
-					
-					//compute the first one, and join the others
-					if (i == 0) {
-						bestValue = tasks.get(i).compute().negate().value;
-					} 
-					else {
-						bestValue = tasks.get(i).join().negate().value;
-					}
+					//join the other tasks
+					bestValue = tasksList.get(i).join().negate().value;
 					
 					//update best value
 					if (bestValue > bestMove.value) {
-						bestMove.move = moves.get(i + lo);
+						bestMove.move = moveList.get(i + lo);
 						bestMove.value = bestValue;
 					}	
 				}
@@ -115,12 +123,11 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
 			// parallelism part 
 			int mid = lo + (hi - lo) / 2;
 			
-			GetBestMoveTask left = new GetBestMoveTask (evaluator, board, depth,
-					moves, sequentialCutOff, divideCutoff, lo, mid, null);
-			GetBestMoveTask right = new GetBestMoveTask (evaluator, board, depth,
-					moves, sequentialCutOff, divideCutoff, mid, hi, null);
+			GetBestMoveTask left = new GetBestMoveTask (board, depth, moveList, sequentialCutOff, divideCutoff, lo, mid, null, evaluator);
+			GetBestMoveTask right = new GetBestMoveTask (board, depth,moveList, sequentialCutOff, divideCutoff, mid, hi, null, evaluator);
 			
 			right.fork();
+			
 			BestMove<M> leftMove = left.compute();
 			BestMove<M> rightMove = right.join();
 			
