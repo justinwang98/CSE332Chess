@@ -96,7 +96,7 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
 				int bestValue;
 				
 				//compute the first task
-				bestValue = tasksList.get(0).compute().negate().value;
+				bestValue = -tasksList.get(0).compute().value;
 				
 				//update best value
 				if (bestValue > bestMove.value) {
@@ -108,7 +108,7 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
 				for (int i = 1; i < tasksList.size(); i++) {
 					
 					//join the other tasks
-					bestValue = tasksList.get(i).join().negate().value;
+					bestValue = -tasksList.get(i).join().value;
 					
 					//update best value
 					if (bestValue > bestMove.value) {
