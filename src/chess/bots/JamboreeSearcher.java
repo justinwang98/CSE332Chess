@@ -2,6 +2,7 @@ package chess.bots;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -16,9 +17,9 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
-
 	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
+	
 	
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
@@ -59,7 +60,7 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		if (move != null) {
     			board = board.copy();
         		board.applyMove(move);
-        		moves = moveSort(board.generateMoves());
+        		moves = board.generateMoves();
         		hi = moves.size();
         		full = true;
     		}
@@ -70,6 +71,10 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		}
     		
     		BestMove<M> best = new BestMove<M>(move, -evaluator.infty());
+    		
+    		if (best == null) {
+    			Collections.sort(moves, new MoveOrderingComparator(board, evaluator));
+    		}
     		
 			// make the moves, then parallelize each move to get the best move
 			if (hi - lo <= divideCutoff) {
@@ -160,7 +165,32 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
 			return best;
     	}
 	    
-	    // sorts the moves
+	    //for move ordering
+	    public class MoveOrderingComparator <M extends Move<M>, B extends Board<M, B>> implements Comparator<M> {
+	    	B board;
+	    	Evaluator<B> evaluator;
+	    	
+	    	public MoveOrderingComparator(B board, Evaluator<B> evaluator) {
+	    		this.board = board;
+	    		this.evaluator = evaluator;
+	    	}
+	    	
+	    	@Override
+	    	public int compare(M o1, M o2) {
+	    		
+	    		board.applyMove(o1);
+	    		Integer value1 = evaluator.eval(board);
+	    		board.undoMove();
+	    		
+	    		board.applyMove(o2);
+	    		Integer value2 = evaluator.eval(board);
+	    		board.undoMove();
+	    		
+	    		return value1.compareTo(value2);
+	    	}
+	    }
+    	
+/*    	// sorts the moves
 	    public List<M> moveSort(List<M> moves) {
 	    	//create array
 	    	Storage[] moveOrder = (Storage []) new Object[moves.size()];
@@ -206,6 +236,6 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
 			List<M> newMoves = new ArrayList<M>();
 			newMoves = moves.
 		}
-		
+	}*/
 	}
 }
