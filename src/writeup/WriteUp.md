@@ -21,16 +21,20 @@
 
 ## The Chess Server ##
 - When you faced Clamps, what did the code you used do?  Was it just your jamboree?  Did you do something fancier?
-  <pre>TODO</pre>
+  
+  We used the jamboree with a slight modification. We did a simpler version of the MVV-LVA and did move ordering based upon whether or not a move was a capture move.
 
 - Did you enjoy watching your bot play on the server?  Is your bot better at chess than you are?
-  <pre>TODO</pre>
+
+  I really enjoyed watching our bot play on the server as I played chess in high school and have a bit of knowledge of chess so I was able to analyze the board as well in between the moves. Our bot is definitely better at chess than I am.
 
 - Did your bot compete with anyone else in the class?  Did you win?
-  <pre>TODO</pre>
+  
+  We did not compete with anyone in the class.
 
 - Did you do any Above and Beyond?  Describe exactly what you implemented.
-  <pre>TODO</pre>
+  
+  We did not do any Above and Beyond.
 
 ## Experiments ##
 
