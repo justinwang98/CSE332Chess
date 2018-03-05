@@ -8,6 +8,7 @@ import chess.board.ArrayBoard;
 import chess.board.ArrayMove;
 import chess.bots.JamboreeSearcher;
 import chess.bots.LazySearcher;
+import chess.bots.ModifiedJamboreeSearcher;
 import chess.bots.ParallelSearcher;
 import chess.game.SimpleEvaluator;
 import chess.game.SimpleTimer;
@@ -23,11 +24,11 @@ public class Engine {
 	 */
 	
 	private Searcher <ArrayMove, ArrayBoard>
-	    searcher = new JamboreeSearcher<ArrayMove,ArrayBoard>();
+	    searcher = new ModifiedJamboreeSearcher<ArrayMove,ArrayBoard>();
 	
 	public Engine(int time, int inc) {
         searcher.setDepth(6);
-        searcher.setCutoff(0);
+        searcher.setCutoff(3);
 
         searcher.setEvaluator(new SimpleEvaluator());
         searcher.setTimer(new SimpleTimer(time, inc));

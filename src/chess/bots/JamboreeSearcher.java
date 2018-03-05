@@ -15,7 +15,7 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
 	private static final int divideCutoff = 5;
-	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
+	private static final double PERCENTAGE_SEQUENTIAL = .5;
 	
 	
 	public M getBestMove(B board, int myTime, int opTime) {
@@ -84,33 +84,35 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
 					tasksList.add(task);
 				}
 				
-				//fork all the tasks
-				for (int i = 1; i < tasksList.size(); i++) {
-					tasksList.get(i).fork();
-				}
-				
-				int alphaValue;
-				
-				//compute the first task
-				alphaValue = -tasksList.get(0).compute().value;
-				
-				//update best value
-				if (alphaValue > bestMove.value) {
-					bestMove.move = moves.get(0 + lo);
-					bestMove.value = alphaValue;
-				}	
-				
-				//finding best value for each task
-				for (int i = 1; i < tasksList.size(); i++) {
+				if (tasksList.size() != 0) {
+					//fork all the tasks
+					for (int i = 1; i < tasksList.size(); i++) {
+						tasksList.get(i).fork();
+					}
 					
-					//join the other tasks
-					alphaValue = -tasksList.get(i).join().value;
+					int alphaValue;
+					
+					//compute the first task
+					alphaValue = -tasksList.get(0).compute().value;
 					
 					//update best value
 					if (alphaValue > bestMove.value) {
-						bestMove.move = moves.get(i + lo);
+						bestMove.move = moves.get(0 + lo);
 						bestMove.value = alphaValue;
 					}	
+					
+					//finding best value for each task
+					for (int i = 1; i < tasksList.size(); i++) {
+						
+						//join the other tasks
+						alphaValue = -tasksList.get(i).join().value;
+						
+						//update best value
+						if (alphaValue > bestMove.value) {
+							bestMove.move = moves.get(i + lo);
+							bestMove.value = alphaValue;
+						}	
+					}
 				}
 				return bestMove;
 		    }

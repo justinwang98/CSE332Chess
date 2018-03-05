@@ -1,6 +1,7 @@
 package chess.bots;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -11,16 +12,29 @@ import cse332.chess.interfaces.Board;
 import cse332.chess.interfaces.Evaluator;
 import cse332.chess.interfaces.Move;
 
-public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
+public class ModifiedJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
 	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
 	
-	
+	private void sort(List<M> list) {
+		Collections.sort(list, new Comparator<M>() {
+			public int compare(M m1, M m2) {
+				if (m1.isCapture() && !m2.isCapture()) {
+					return -1;
+				} else if (m2.isCapture() && !m1.isCapture()) {
+					return 1;
+				} else {
+					return 0;
+				} // write compareto here
+			}
+		});
+	}
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
+		sort(moves);
 		
 		//using the cutoff instance variable in AbstractSearcher
 		BestMove<M> best = POOL.invoke(new GetBestMoveTask(board, ply, moves, cutoff,
@@ -59,6 +73,7 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     			board = board.copy();
         		board.applyMove(move);
         		moves = board.generateMoves();
+        		sort(moves);
         		hi = moves.size();
         		full = true;
     		}
@@ -162,29 +177,29 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     	}
 	    
 	    //for move ordering
-	    public class MoveOrderingComparator <M extends Move<M>, B extends Board<M, B>> implements Comparator<M> {
-	    	B board;
-	    	Evaluator<B> evaluator;
-	    	
-	    	public MoveOrderingComparator(B board, Evaluator<B> evaluator) {
-	    		this.board = board;
-	    		this.evaluator = evaluator;
-	    	}
-	    	
-	    	@Override
-	    	public int compare(M o1, M o2) {
-	    		
-	    		board.applyMove(o1);
-	    		Integer value1 = evaluator.eval(board);
-	    		board.undoMove();
-	    		
-	    		board.applyMove(o2);
-	    		Integer value2 = evaluator.eval(board);
-	    		board.undoMove();
-	    		
-	    		return value1.compareTo(value2);
-	    	}
-	    }
+//	    public class MoveOrderingComparator <M extends Move<M>, B extends Board<M, B>> implements Comparator<M> {
+//	    	B board;
+//	    	Evaluator<B> evaluator;
+//	    	
+//	    	public MoveOrderingComparator(B board, Evaluator<B> evaluator) {
+//	    		this.board = board;
+//	    		this.evaluator = evaluator;
+//	    	}
+//	    	
+//	    	@Override
+//	    	public int compare(M o1, M o2) {
+//	    		
+//	    		board.applyMove(o1);
+//	    		Integer value1 = evaluator.eval(board);
+//	    		board.undoMove();
+//	    		
+//	    		board.applyMove(o2);
+//	    		Integer value2 = evaluator.eval(board);
+//	    		board.undoMove();
+//	    		
+//	    		return value1.compareTo(value2);
+//	    	}
+//	    }
     	
 /*    	// sorts the moves
 	    public List<M> moveSort(List<M> moves) {
