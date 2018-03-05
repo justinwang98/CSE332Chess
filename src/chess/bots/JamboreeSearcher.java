@@ -2,7 +2,6 @@ package chess.bots;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -72,14 +71,12 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		
     		BestMove<M> best = new BestMove<M>(move, -evaluator.infty());
     		
-    		if (best == null) {
-    			Collections.sort(moves, new MoveOrderingComparator(board, evaluator));
-    		}
     		
 			// make the moves, then parallelize each move to get the best move
 			if (hi - lo <= divideCutoff) {
 				
 				BestMove<M> bestMove = new BestMove<M>(-evaluator.infty());
+				
 				ArrayList<GetBestMoveTask> tasksList = new ArrayList<GetBestMoveTask>();
 				
 				//add all the tasks, note that these are sequential tasks (lo = 0 = hi)
