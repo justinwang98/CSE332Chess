@@ -1,7 +1,6 @@
 package chess.bots;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -12,12 +11,13 @@ import cse332.chess.interfaces.Board;
 import cse332.chess.interfaces.Evaluator;
 import cse332.chess.interfaces.Move;
 
-public class JwModJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
+public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
-	private static final int divideCutoff = 3;
+	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
+	
 	
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
@@ -58,7 +58,7 @@ public class JwModJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> ext
     		if (move != null) {
     			board = board.copy();
         		board.applyMove(move);
-        		moves = moveSort(board.generateMoves());
+        		moves = board.generateMoves();
         		hi = moves.size();
         		full = true;
     		}
@@ -70,10 +70,12 @@ public class JwModJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> ext
     		
     		BestMove<M> best = new BestMove<M>(move, -evaluator.infty());
     		
+    		
 			// make the moves, then parallelize each move to get the best move
 			if (hi - lo <= divideCutoff) {
 				
 				BestMove<M> bestMove = new BestMove<M>(-evaluator.infty());
+				
 				ArrayList<GetBestMoveTask> tasksList = new ArrayList<GetBestMoveTask>();
 				
 				//add all the tasks, note that these are sequential tasks (lo = 0 = hi)
@@ -159,7 +161,32 @@ public class JwModJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> ext
 			return best;
     	}
 	    
-	    // sorts the moves
+	    //for move ordering
+	    public class MoveOrderingComparator <M extends Move<M>, B extends Board<M, B>> implements Comparator<M> {
+	    	B board;
+	    	Evaluator<B> evaluator;
+	    	
+	    	public MoveOrderingComparator(B board, Evaluator<B> evaluator) {
+	    		this.board = board;
+	    		this.evaluator = evaluator;
+	    	}
+	    	
+	    	@Override
+	    	public int compare(M o1, M o2) {
+	    		
+	    		board.applyMove(o1);
+	    		Integer value1 = evaluator.eval(board);
+	    		board.undoMove();
+	    		
+	    		board.applyMove(o2);
+	    		Integer value2 = evaluator.eval(board);
+	    		board.undoMove();
+	    		
+	    		return value1.compareTo(value2);
+	    	}
+	    }
+    	
+/*    	// sorts the moves
 	    public List<M> moveSort(List<M> moves) {
 	    	//create array
 	    	Storage[] moveOrder = (Storage []) new Object[moves.size()];
@@ -205,6 +232,6 @@ public class JwModJamboreeSearcher<M extends Move<M>, B extends Board<M, B>> ext
 			List<M> newMoves = new ArrayList<M>();
 			newMoves = moves.
 		}
-		
+	}*/
 	}
 }

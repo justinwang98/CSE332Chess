@@ -19,6 +19,9 @@ import cse332.chess.server.Hub;
  * beating clamps.  Though, it can also be very useful for debugging to
  * have your bot play on the server.
  */
+
+//Team password: VOH5yRk5Fs
+
 public class EasyChess extends JFrame {
 
     private static final long serialVersionUID = -627544530172904783L;

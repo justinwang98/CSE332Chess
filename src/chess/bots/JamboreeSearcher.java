@@ -1,7 +1,6 @@
 package chess.bots;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -15,8 +14,9 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
-	private static final int divideCutoff = 3;
+	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
+	
 	
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
@@ -69,10 +69,12 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		
     		BestMove<M> best = new BestMove<M>(move, -evaluator.infty());
     		
+    		
 			// make the moves, then parallelize each move to get the best move
 			if (hi - lo <= divideCutoff) {
 				
 				BestMove<M> bestMove = new BestMove<M>(-evaluator.infty());
+				
 				ArrayList<GetBestMoveTask> tasksList = new ArrayList<GetBestMoveTask>();
 				
 				//add all the tasks, note that these are sequential tasks (lo = 0 = hi)
