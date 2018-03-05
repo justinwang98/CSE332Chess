@@ -6,13 +6,11 @@ import cse332.chess.interfaces.AbstractSearcher;
 import cse332.chess.interfaces.Board;
 import cse332.chess.interfaces.Evaluator;
 import cse332.chess.interfaces.Move;
-import cse332.exceptions.NotYetImplementedException;
 
 public class AlphaBetaSearcher<M extends Move<M>, B extends Board<M, B>> extends AbstractSearcher<M, B> {
 	
 	public M getBestMove(B board, int myTime, int opTime) {
-    	BestMove<M> best = alphaBeta(evaluator, board, ply, -evaluator.infty(), evaluator.infty());
-    	return best.move;
+    	return alphaBeta(evaluator, board, ply, -evaluator.infty(), evaluator.infty()).move;
     }  
     
     public static <M extends Move<M>, B extends Board<M, B>> BestMove<M> alphaBeta(Evaluator<B> evaluator, B board, int depth, int alpha, int beta) {

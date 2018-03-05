@@ -1,6 +1,8 @@
 package chess.bots;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
@@ -14,9 +16,9 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
+
 	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = 0.5;
-	
 	
 	public M getBestMove(B board, int myTime, int opTime) {
 		List<M> moves = board.generateMoves();
@@ -57,7 +59,7 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		if (move != null) {
     			board = board.copy();
         		board.applyMove(move);
-        		moves = board.generateMoves();
+        		moves = moveSort(board.generateMoves());
         		hi = moves.size();
         		full = true;
     		}
@@ -157,5 +159,53 @@ public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
 			}
 			return best;
     	}
+	    
+	    // sorts the moves
+	    public List<M> moveSort(List<M> moves) {
+	    	//create array
+	    	Storage[] moveOrder = (Storage []) new Object[moves.size()];
+	    	
+	    	//add list elements into array
+	    	for (int i = 0; i < moves.size(); i++) {
+	    		M currMove = moves.get(i);
+	    		board.applyMove(currMove);
+	    		moveOrder[i] = new Storage(currMove, evaluator.eval(board));
+	    		board.undoMove();
+	    	}
+	    	
+	    	//sort array
+	    	Arrays.sort(moveOrder);
+	    	
+	    	List<M> newMoves = new ArrayList<M>();
+	    	
+	    	for (int i = 0; i < moveOrder.length; i++) {
+	    		
+	    	}
+	    }
+	    
+	    public class Storage {
+	    	public M move;
+	    	public int value;
+	    	
+	    	public Storage(M move, int value) {
+	    		this.move = move;
+	    		this.value = value;
+	    	}
+	    }
+	}
+	
+	public class ChessCompare implements Comparable{
+		
+		List<M> moves;
+
+		public ChessCompare(List<M> moves) {
+			this.moves = moves;
+		}
+		
+		public int compareTo() {
+			List<M> newMoves = new ArrayList<M>();
+			newMoves = moves.
+		}
+		
 	}
 }

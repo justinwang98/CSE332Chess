@@ -16,8 +16,7 @@ public class SimpleSearcher<M extends Move<M>, B extends Board<M, B>> extends
 
     public M getBestMove(B board, int myTime, int opTime) {
     	
-        BestMove<M> best = minimax(board, ply, evaluator);
-        return best.move;
+        return minimax(board, ply, evaluator).move;
     }
 
     public static <M extends Move<M>, B extends Board<M, B>> BestMove<M> minimax(B board, int depth, Evaluator<B> evaluator) {
