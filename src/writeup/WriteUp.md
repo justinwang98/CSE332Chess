@@ -3,19 +3,22 @@
 
 ## Project Enjoyment ##
 - How Was Your Partnership?
-  <pre>TODO</pre>
+  It was great, we worked together since project 1 and we understood our responsibilities pretty well.
   
 - What was your favorite part of the project?
-  <pre>TODO</pre>
+  Converting the sequential searchers to the parallel versions was kind of interesting, especially after
+  practicing on the para excercises.
 
 - What was your least favorite part of the project?
-  <pre>TODO</pre>
+  The writeup, although poses really interesting questions, was confusing to understand at times.
 
 - How could the project be improved?
-  <pre>TODO</pre>
+  I think a more in-depth tutorial or discussion on how to use the Google Compute Engine, and how to run
+  actual experiments on it for the project would be useful.
 
 - Did you enjoy the project?
-  <pre>TODO</pre>
+  Yes, the idea of making a chess player using a searching algorithm was really interesting, and it was cool
+  to put what we have learnt into something real like chess.
     
 -----
 
@@ -44,9 +47,9 @@
 Suppose your bot goes 3-ply deep.  How many game tree nodes do you think
 it explores (we're looking for an order of magnitude) if:
  - ...you're using minimax?
-    <pre>TODO</pre>
+    About 50,000 nodes
  - ...you're using alphabeta?
-    <pre>TODO</pre>
+    About 5,000 nodes
 
 #### Results ####
 Run an experiment to determine the actual answers for the above.  To run
@@ -144,10 +147,22 @@ formalization of the traffic problem as a graph in this question.
   distance were factored in using the evaluation function.  If you wanted to use
   Dijkstra's Algorithm to solve this problem instead of Minimax, how would you
   formulate it as a graph?
-  <pre>TODO</pre>
+  
+  	The roads between the intersections would be the edges, and the intersections themselves would be
+  	the nodes. The weights of the edges will be based on what the traffic and speed limit there is.
+  	the more traffic and the lower the speed limit, the bigger the value of the weight.   
 
 - These two algorithms DO NOT optimize for the same thing.  (If they did,
   Dijkstra's is always faster; so, there would be no reason to ever use
   Minimax.)  Describe the difference in what each of the algorithms is
   optimizing for.  When will they output different paths?
-  <pre>TODO</pre>
+  
+  	Djikstra's always looks for the shortest (weighted) path from one node to all the other nodes, whereas Minimax
+  	finds the shortest path between two points. Djikstra's look at the whole board while minimax looks for the shortest
+  	path at each step. The problem with Djikstra's is that any changes to the roads (accident, or rerouting)
+    means  we have to update all the weights and values again from the changed node, whereas minimax just computes between two points
+    taking the change into account without having to compute the whole path again.
+ 
+
+  
+  
