@@ -81,6 +81,8 @@ entry in the table surprising?  Based ONLY on this table, do you feel
 like there is a substantial difference between the four algorithms?
 <pre>TODO</pre>
 
+
+
 ### Optimizing Experiments ###
 THE EXPERIMENTS IN THIS SECTION WILL TAKE A LONG TIME TO RUN. 
 To make this better, you should use Google Compute Engine:
@@ -93,6 +95,13 @@ and end, you should choose the starting board, a board around the middle
 of a game, and a board about 5 moves from the end of the game.  The exact boards
 you choose don't matter (although, you shouldn't choose a board already in
 checkmate), but they should be different.
+
+With white using depth 5 and black using depth 4.
+
+Board:
+	beg (line 0): rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
+	middle(line 42): 4k3/p2n1pp1/3R1n2/4p3/2P2r2/P7/1PP5/2KR4 w Hk
+	5 moves from end (line 86): 8/2k5/5n2/2P1R3/8/2P3p1/r4pK1/8 w H
 
 #### Sequential Cut-Offs ####
 Experimentally determine the best sequential cut-off for both of your

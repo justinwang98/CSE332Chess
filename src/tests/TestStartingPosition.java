@@ -2,9 +2,8 @@ package tests;
 
 import chess.board.ArrayBoard;
 import chess.board.ArrayMove;
-import chess.bots.LazySearcher;
+import chess.bots.SimpleSearcher;
 import chess.game.SimpleEvaluator;
-import cse332.chess.interfaces.Move;
 import cse332.chess.interfaces.Searcher;
 
 public class TestStartingPosition {
@@ -23,7 +22,7 @@ public class TestStartingPosition {
         System.out.println(botName + " returned " + getBestMove(fen, searcher, depth, cutoff));
     }
     public static void main(String[] args) {
-        Searcher<ArrayMove, ArrayBoard> dumb = new LazySearcher<>();
+        Searcher<ArrayMove, ArrayBoard> dumb = new SimpleSearcher<>();
         printMove(STARTING_POSITION, dumb, 3, 0);
     }
 }
