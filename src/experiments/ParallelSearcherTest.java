@@ -1,4 +1,4 @@
-package chess.bots;
+package experiments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,10 @@ import cse332.chess.interfaces.Move;
 import java.util.concurrent.RecursiveTask;
 import cse332.chess.interfaces.Evaluator;
 
-public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
+public class ParallelSearcherTest<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
-	
-	//turn back to final later
-//	public ParallelSearcher(int k) {
-//		POOL = new ForkJoinPool(k);
-//	}
-//	
 	private static final int divideCutoff = 3;
 	
 	public M getBestMove(B board, int myTime, int opTime) {
@@ -71,14 +65,17 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		
     		if (move != null) {
     			board = board.copy();
+    			
         		board.applyMove(move);
+        		CountingNodes.count++;
+        		
         		moveList = board.generateMoves();
         		hi = moveList.size();	
     		}
     		
     		// sequential
     		if (depth <= sequentialCutOff || moveList.isEmpty()) {
-    			return SimpleSearcher.minimax(board, depth, evaluator);
+    			return SimpleSearcherTest.minimax(board, depth, evaluator);
     		}
     		
 			// make the moves, then parallelize each move to get the best move
@@ -94,36 +91,34 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
 					tasksList.add(task);
 				}
 				
-				if (tasksList.size() != 0) {
-					//fork all the tasks
-					for (int i = 1; i < tasksList.size(); i++) {
-						tasksList.get(i).fork();
-					}
+				//fork all the tasks
+				for (int i = 1; i < tasksList.size(); i++) {
+					tasksList.get(i).fork();
+				}
+				
+				int bestValue;
+				
+				//compute the first task
+				bestValue = -tasksList.get(0).compute().value;
+				
+				//update best value
+				if (bestValue > bestMove.value) {
+					bestMove.move = moveList.get(0 + lo);
+					bestMove.value = bestValue;
+				}	
+				
+				//finding best value for each task
+				for (int i = 1; i < tasksList.size(); i++) {
 					
-					int bestValue;
-					
-					//compute the first task
-					bestValue = -tasksList.get(0).compute().value;
+					//join the other tasks
+					bestValue = -tasksList.get(i).join().value;
 					
 					//update best value
 					if (bestValue > bestMove.value) {
-						bestMove.move = moveList.get(0 + lo);
+						bestMove.move = moveList.get(i + lo);
 						bestMove.value = bestValue;
 					}	
-					
-					//finding best value for each task
-					for (int i = 1; i < tasksList.size(); i++) {
-						
-						//join the other tasks
-						bestValue = -tasksList.get(i).join().value;
-						
-						//update best value
-						if (bestValue > bestMove.value) {
-							bestMove.move = moveList.get(i + lo);
-							bestMove.value = bestValue;
-						}	
-					}
-				}	
+				}
 				return bestMove;
 			}
 			

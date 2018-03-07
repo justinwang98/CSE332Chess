@@ -47,9 +47,9 @@
 Suppose your bot goes 3-ply deep.  How many game tree nodes do you think
 it explores (we're looking for an order of magnitude) if:
  - ...you're using minimax?
-    About 50,000 nodes
+    About 30,000 nodes
  - ...you're using alphabeta?
-    About 5,000 nodes
+    About 10,000 nodes
 
 #### Results ####
 Run an experiment to determine the actual answers for the above.  To run
@@ -65,21 +65,37 @@ the experiment, do the following:
    implementations).  Make a pretty graph of your results (link to it from
    here) and fill in the table here as well:
 
-<pre>TODO: Fill in the table below</pre>
 
+|      Algorithm     | 1-ply | 2-ply | 3-ply | 4-ply |  5-ply |
+| :----------------: |:-----:|:-----:|:-----:|:-----:|:------:|
+|       Minimax      |   28  |  927  | 31347 |1057852|37145433|
+|  Parallel Minimax  |   28  |  927  | 31347 |1057852|37145433|
+|      Alphabeta     |   28  |  371  | 6388  | 63303 |719703  |
+|      Jamboree      |   28  |  865  | 10718 |180807 |1834245 |
 
-|      Algorithm     | 1-ply | 2-ply | 3-ply | 4-ply | 5-ply |
-| :----------------: |:-----:|:-----:|:-----:|:-----:|:-----:|
-|       Minimax      |       |       |       |       |       |
-|  Parallel Minimax  |       |       |       |       |       |
-|      Alphabeta     |       |       |       |       |       |
-|      Jamboree      |       |       |       |       |       |
+![](CountingNodes.png)
 
 #### Conclusions ####
 How close were your estimates to the actual values?  Did you find any
 entry in the table surprising?  Based ONLY on this table, do you feel
 like there is a substantial difference between the four algorithms?
-<pre>TODO</pre>
+
+We counted the number of nodes visited for each fen (64 fens in total),
+and totalled them up. I then divided it by the number of fens to get the
+average nodes, which is what is represented in the table and graph above.
+Looking at minimax and alphabeta for 3-ply, I was pleasantly surprised that
+my estimates were really close. The minimax and parallel minimax pair are significantly
+worse from the alphabeta and jamboree pair. This is because alpha beta removes
+unnesssary nodes to be visited, which is the reason for the significant difference
+in number of nodes visited. It makes sense that minimax and parallel minimax
+visits the same amount of nodes, as the optimization for parallel minimax is using parallelism
+to reduce runtime, not reducing the number of nodes itself, unlike alphabeta and jamboree,
+which is why they visited way lesser nodes than the former pair. (due to pruning).
+
+One thing to note is that jamboree visited significantly more nodes than alpha beta (not to the extent
+of the minimax and parallel minimax pair). This was interesting as jamboree was supposed to be the "ultimate"
+searcher out of the four. My guess is that similar to parallel minimax, jamboree optimizes not by pruning like
+alpha beta, but more because of parallelism.
 
 
 
@@ -109,7 +125,17 @@ parallel searchers.  You should test this at depth 5.  If you want it
 to go more quickly, now is a good time to figure out Google Compute
 Engine.   Plot your results and discuss which cut-offs work the best on each of
 your three boards.
-<pre>TODO: Do the experiment; discuss the results (possibly with pretty graphs!)</pre>
+
+![](Cutoff_Jamboree.png)
+![](Cutoff_Parallel.png)
+
+The data shows that for all three board positions, Jamboree performed significantly better than Parallel Minimax.
+Jamboree performed the best when cutoff = 2, while Minimax performed the best when cutoff = 3.
+My guess is that since Jamboree prunes and parallel minimax do not, Jamboree is more efficient and requires
+a lower cutoff than parallel minimax. 
+The cutoffs also seem to affect parallel minimax on a larger scale as compared to jamboree, the difference between
+the cutoff of 1 and 4 for parallel minimax being almost 100 times. This is also probably due to the pruning of jamboree,
+which removes uneccessary nodes.
 
 #### Number Of Processors ####
 Now that you have found an optimal cut-off, you should find the optimal
@@ -125,7 +151,23 @@ ForkJoinPool POOL = new ForkJoinPool(k);
 ```
 Plot your results and discuss which number of processors works the best on each
 of the three boards.
-<pre>TODO: Do the experiment; discuss the results (possibly with pretty graphs!)</pre>
+
+![](Processors_Jamboree.png)
+![](Processors_Parallel.png)
+
+We calculated the average runtime over 10 trials for the number of processors in increments of 4 up to 20,
+the increments of 1 up to 32 for early, middle, and end game states. From the data table, we see that the number
+of processors that results in the best runtime for each game state is 28, 29, 20 respectively (early, middle, end) for
+Jamboree, and 32, 30, 28 for parallel minimax.
+ 
+However, what is more important is that for all three game states, their runtimes decrease until about 12 processors, 
+where the runtime is roughly the same until 32 processors. This leads me to generalize 12 processors is the minimum 
+number of processors for any significant decrease in runtime, any more and the decrease is insignificant and not worth it.
+Note that some of the data are unavailable for certain processors.
+
+Overall, Jamboree performed significantly better than parallel minimax by a long shot. In general, as the game progresses from early
+to middle to end, the runtime decreases as well, probably because the options or possible moves gets lower and lower.
+
 
 #### Comparing The Algorithms ####
 Now that you have found an optimal cut-off and an optimal number of processors, 
@@ -136,14 +178,20 @@ cut-offs and the optimal number of processors, time all four of your algorithms
 for each of the three boards.
 
 Plot your results and discuss anything surprising about your results here.
-<pre>TODO: Do the experiment; discuss the results (possibly with pretty graphs!)</pre>
 
-|      Algorithm     | Early Game | Mid Game | End Game |
-| :----------------: |:----------:|:--------:|:--------:|
-|       Minimax      |            |          |          |
-|  Parallel Minimax  |            |          |          |
-|      Alphabeta     |            |          |          |
-|      Jamboree      |            |          |          |
+![](FinalComparison.png)
+![](Comparison.png)
+
+We used the optimal cutoff and number of processors we found above over twenty trials with 3 warmpup trials,
+and calculated the average for start, middle and end game states. Looking at the data, for all three game
+states, Jamboree performs the best, followed by Alpha beta, parallel minimax, and mini max. This is the result
+of the optimization caused by pruning, and the move ordering we implemented to get Jamboree to beat clamps. 
+Minimax, without any optimization through parallelism or pruning, performed significantly worse than the other
+three algorithms.
+
+Alpha beta also performed better all across the game states than Parallel minimax. This leads me to believe that
+pruning is more effective at optimization than parallelism in this situation. The combination of pruning and parallelism,
+or the lack of both, explains why Jamboree (pruning and parallelism) performed the best, and why minimax (none) performed the worst.
 
 
 ### Beating Traffic ###

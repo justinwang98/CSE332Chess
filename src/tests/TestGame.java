@@ -37,6 +37,7 @@ public class TestGame {
        while (!board.inCheck() || board.generateMoves().size() > 0) {
            currentPlayer = currentPlayer.equals(this.whitePlayer) ? this.blackPlayer : this.whitePlayer;
            System.out.printf("%3d: " + board.fen() + "\n", turn);
+           //here
            this.board.applyMove(currentPlayer.getBestMove(board, 1000, 1000));
            turn++;
        }
