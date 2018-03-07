@@ -13,12 +13,12 @@ import cse332.chess.interfaces.Move;
 public class JamboreeSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
-	private static ForkJoinPool POOL;
+	private static final ForkJoinPool POOL = new ForkJoinPool();
 	
 	//turn back to final later
-	public JamboreeSearcher(int k) {
-		POOL = new ForkJoinPool(k);
-	}
+//	public JamboreeSearcher(int k) {
+//		POOL = new ForkJoinPool(k);
+//	}
 	
 	private static final int divideCutoff = 5;
 	private static final double PERCENTAGE_SEQUENTIAL = .5;
