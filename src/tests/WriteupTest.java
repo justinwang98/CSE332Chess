@@ -3,13 +3,8 @@ package tests;
 import chess.board.ArrayBoard;
 import chess.board.ArrayMove;
 import chess.bots.JamboreeSearcher;
-import chess.bots.LazySearcher;
-import chess.bots.ParallelSearcher;
-import chess.bots.SimpleSearcher;
 import chess.game.SimpleEvaluator;
-import cse332.chess.interfaces.Move;
 import cse332.chess.interfaces.Searcher;
-import tests.gitlab.TestingInputs;
 
 public class WriteupTest {
     public Searcher<ArrayMove, ArrayBoard> whitePlayer;
