@@ -27,7 +27,7 @@ public class Engine {
 	    searcher = new ModifiedJamboreeSearcher<ArrayMove,ArrayBoard>();
 	
 	public Engine(int time, int inc) {
-        searcher.setDepth(5);
+        searcher.setDepth(6);
         searcher.setCutoff(3);
 
         searcher.setEvaluator(new SimpleEvaluator());
