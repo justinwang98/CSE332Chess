@@ -19,8 +19,8 @@ public class ProcessorWriteupTest {
     	String end = "8/2k5/5n2/2P1R3/8/2P3p1/r4pK1/8 w H -";
     	
     	search(beg, 8, run(beg, 4), 0);
-    	search(beg, 8, run(mid, 4), 0);
-    	search(beg, 8, run(end, 4), 0);
+    	search(mid, 8, run(mid, 4), 0);
+    	search(end, 8, run(end, 4), 0);
     }
     
     public static void search(String pos, int curr, double bestTime, int bestCores) {
