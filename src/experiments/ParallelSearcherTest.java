@@ -1,4 +1,4 @@
-package chess.bots;
+package experiments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import cse332.chess.interfaces.Move;
 import java.util.concurrent.RecursiveTask;
 import cse332.chess.interfaces.Evaluator;
 
-public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
+public class ParallelSearcherTest<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
@@ -65,14 +65,17 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
     		
     		if (move != null) {
     			board = board.copy();
+    			
         		board.applyMove(move);
+        		CountingNodes.count++;
+        		
         		moveList = board.generateMoves();
         		hi = moveList.size();	
     		}
     		
     		// sequential
     		if (depth <= sequentialCutOff || moveList.isEmpty()) {
-    			return SimpleSearcher.minimax(board, depth, evaluator);
+    			return SimpleSearcherTest.minimax(board, depth, evaluator);
     		}
     		
 			// make the moves, then parallelize each move to get the best move
