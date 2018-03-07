@@ -3,6 +3,7 @@ package tests;
 import chess.board.ArrayBoard;
 import chess.board.ArrayMove;
 import chess.bots.JamboreeSearcher;
+import chess.bots.ParallelSearcher;
 import chess.game.SimpleEvaluator;
 import cse332.chess.interfaces.Searcher;
 
@@ -56,8 +57,8 @@ public class WriteupTest {
     }
     
     public WriteupTest(int cutoff) {
-        setupWhitePlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
-        setupBlackPlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
+        setupWhitePlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
+        setupBlackPlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
     }
     
     public void play(String startPos) {
