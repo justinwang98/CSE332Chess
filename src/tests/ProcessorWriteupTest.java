@@ -7,7 +7,7 @@ import chess.bots.ParallelSearcher;
 import chess.game.SimpleEvaluator;
 import cse332.chess.interfaces.Searcher;
 
-public class WriteupTest {
+public class ProcessorWriteupTest {
     public Searcher<ArrayMove, ArrayBoard> whitePlayer;
     public Searcher<ArrayMove, ArrayBoard> blackPlayer;
     
@@ -17,15 +17,43 @@ public class WriteupTest {
     	String beg = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     	String mid = "4k3/p2n1pp1/3R1n2/4p3/2P2r2/P7/1PP5/2KR4 w Hk -";
     	String end = "8/2k5/5n2/2P1R3/8/2P3p1/r4pK1/8 w H -";
-
-    	for (int i = 0; i < 6; i++) {
-    		run(beg, i);
-    		run(mid, i);
-    		run(end, i);
+    	
+    	search(beg, 8, run(beg, 4), 0);
+    	search(beg, 8, run(mid, 4), 0);
+    	search(beg, 8, run(end, 4), 0);
+    }
+    
+    public static void search(String pos, int curr, double bestTime, int bestCores) {
+    	if (curr <= 32) {
+    		double time4 = run(pos, curr);	
+	    	if (time4 < bestTime) {
+	    		bestTime = time4;
+	    		bestCores = curr;
+	    		search(pos, curr + 4, bestTime, bestCores);
+	    	} else {
+	    		double time0 = run(pos, curr - 4);
+		    	double time1 = run(pos, curr - 3);
+		    	double time2 = run(pos, curr - 2);
+		    	double time3 = run(pos, curr - 1);
+		    	
+		    	double best = Math.min(Math.min(time0, time1), Math.min(time2, time3));
+		    	
+		    	if (best == time0) {
+		    		bestCores = curr - 4;
+		    	} else if (best == time1) {
+		    		bestCores = curr - 3;
+		    	} else if (best == time2) {
+		    		bestCores = curr - 2;
+		    	} else {
+		    		bestCores = curr - 1;
+		    	}
+		    	
+		    	System.out.println("best cores is: " + bestCores);
+	    	}
     	}
     }
     
-    public static void run(String startPos, int cutoff) {
+    public static double run(String startPos, int processors) {
         final int NUM_TESTS = 5;
         final int NUM_WARMUP = 2;
         
@@ -34,7 +62,7 @@ public class WriteupTest {
             long startTime = System.currentTimeMillis();
             // Put whatever you want to time here .....
             
-            WriteupTest game = new WriteupTest(cutoff);
+            ProcessorWriteupTest game = new ProcessorWriteupTest(processors);
             game.play(startPos);
             
             long endTime = System.currentTimeMillis();
@@ -53,12 +81,14 @@ public class WriteupTest {
         	pos = "End";
         }
         
-        System.out.println("Start position: " + pos + ", Cutoff: " + cutoff + " is: " + averageRuntime);
+        System.out.println("Start position: " + pos + ", Processor: " + " is: " + averageRuntime);
+        return averageRuntime;
     }
     
-    public WriteupTest(int cutoff) {
-        setupWhitePlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
-        setupBlackPlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(), 5, cutoff);
+    
+    public ProcessorWriteupTest(int processors) {
+        setupWhitePlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
+        setupBlackPlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
     }
     
     public void play(String startPos) {
