@@ -87,8 +87,8 @@ public class ProcessorWriteupTest {
     
     
     public ProcessorWriteupTest(int processors) {
-        setupWhitePlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
-        setupBlackPlayer(new JamboreeSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
+        setupWhitePlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
+        setupBlackPlayer(new ParallelSearcher<ArrayMove, ArrayBoard>(processors), 5, 3);
     }
     
     public void play(String startPos) {
