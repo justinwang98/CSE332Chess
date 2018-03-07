@@ -14,7 +14,6 @@ import tests.gitlab.TestingInputs;
 public class WriteupTest {
     public Searcher<ArrayMove, ArrayBoard> whitePlayer;
     public Searcher<ArrayMove, ArrayBoard> blackPlayer;
-    public static final String STARTING_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     private ArrayBoard board;
     
