@@ -14,6 +14,12 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
         AbstractSearcher<M, B> {
 	
 	private static final ForkJoinPool POOL = new ForkJoinPool();
+	
+	//turn back to final later
+//	public ParallelSearcher(int k) {
+//		POOL = new ForkJoinPool(k);
+//	}
+//	
 	private static final int divideCutoff = 3;
 	
 	public M getBestMove(B board, int myTime, int opTime) {
@@ -88,34 +94,36 @@ public class ParallelSearcher<M extends Move<M>, B extends Board<M, B>> extends
 					tasksList.add(task);
 				}
 				
-				//fork all the tasks
-				for (int i = 1; i < tasksList.size(); i++) {
-					tasksList.get(i).fork();
-				}
-				
-				int bestValue;
-				
-				//compute the first task
-				bestValue = -tasksList.get(0).compute().value;
-				
-				//update best value
-				if (bestValue > bestMove.value) {
-					bestMove.move = moveList.get(0 + lo);
-					bestMove.value = bestValue;
-				}	
-				
-				//finding best value for each task
-				for (int i = 1; i < tasksList.size(); i++) {
+				if (tasksList.size() != 0) {
+					//fork all the tasks
+					for (int i = 1; i < tasksList.size(); i++) {
+						tasksList.get(i).fork();
+					}
 					
-					//join the other tasks
-					bestValue = -tasksList.get(i).join().value;
+					int bestValue;
+					
+					//compute the first task
+					bestValue = -tasksList.get(0).compute().value;
 					
 					//update best value
 					if (bestValue > bestMove.value) {
-						bestMove.move = moveList.get(i + lo);
+						bestMove.move = moveList.get(0 + lo);
 						bestMove.value = bestValue;
 					}	
-				}
+					
+					//finding best value for each task
+					for (int i = 1; i < tasksList.size(); i++) {
+						
+						//join the other tasks
+						bestValue = -tasksList.get(i).join().value;
+						
+						//update best value
+						if (bestValue > bestMove.value) {
+							bestMove.move = moveList.get(i + lo);
+							bestMove.value = bestValue;
+						}	
+					}
+				}	
 				return bestMove;
 			}
 			
