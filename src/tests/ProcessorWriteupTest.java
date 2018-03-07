@@ -81,7 +81,7 @@ public class ProcessorWriteupTest {
         	pos = "End";
         }
         
-        System.out.println("Start position: " + pos + ", Processor: " + " is: " + averageRuntime);
+        System.out.println("Start position: " + pos + ", Processor: " + processors + " is: " + averageRuntime);
         return averageRuntime;
     }
     
