@@ -112,13 +112,6 @@ of a game, and a board about 5 moves from the end of the game.  The exact boards
 you choose don't matter (although, you shouldn't choose a board already in
 checkmate), but they should be different.
 
-With white using depth 5 and black using depth 5.
-
-Board:
-	beg (line 0): rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
-	middle(line 42): 4k3/p2n1pp1/3R1n2/4p3/2P2r2/P7/1PP5/2KR4 w Hk
-	5 moves from end (line 86): 8/2k5/5n2/2P1R3/8/2P3p1/r4pK1/8 w H
-
 #### Sequential Cut-Offs ####
 Experimentally determine the best sequential cut-off for both of your
 parallel searchers.  You should test this at depth 5.  If you want it
@@ -131,7 +124,7 @@ your three boards.
 
 The data we collected from 10 trials each shows that for all three board positions, Jamboree performed significantly better than Parallel Minimax. Jamboree performed the best when cutoff = 2, while Minimax performed the best when cutoff = 3.
 My guess is that since Jamboree prunes and parallel minimax do not, Jamboree is more efficient and requires
-a lower cutoff than parallel minimax. 
+a lower cutoff than parallel minimax. This makes sense as the further the cutoffs are from the middle or 2.5 the more sequential or parallel they are, which both reduce the advantage the searches can take of the parallelism.
 The cutoffs also seem to affect parallel minimax on a larger scale as compared to jamboree, the difference between
 the cutoff of 1 and 4 for parallel minimax being almost 100 times. This is also probably due to the pruning of jamboree,
 which removes uneccessary nodes.
@@ -156,12 +149,9 @@ of the three boards.
 
 We calculated the average runtime over 10 trials for the number of processors in increments of 4 up until the previous
 speed was faster than the current. Then we incremented over the 4 core-counts in between the previous and current and found the best speed for early, middle, and end game states. From the data table, we see that the number of processors that results in the best runtime for each game state is 28, 29, 20 respectively (early, middle, end) for
-Jamboree, and 32, 30, 28 for parallel minimax.
+Jamboree, and 32, 30, 28 for parallel minimax. This makes sense because generally the more processors that are available the more that the parallelism in the code can be taken advantaged of.
  
-However, what is more important is that for all three game states, their runtimes decrease until about 12 processors, 
-where the runtime is roughly the same until 32 processors. This leads me to generalize 12 processors is the minimum 
-number of processors for any significant decrease in runtime, any more and the decrease is insignificant and not worth it.
-Note that some of the data are unavailable for certain processors.
+However, what is more important is that for all three game states, their runtimes significantly decrease until about 12 processors, where the runtime is roughly the same until 32 processors. This leads me to generalize 12 processors is the minimum number of processors for any significant decrease in runtime, any more and the decrease is insignificant and not worth it. Note that some of the data are unavailable for certain processors.
 
 Overall, Jamboree performed significantly better than parallel minimax by a long shot. In general, as the game progresses from early
 to middle to end, the runtime decreases as well, probably because the options or possible moves gets lower and lower.
@@ -183,12 +173,12 @@ Plot your results and discuss anything surprising about your results here.
 We used the optimal cutoff and number of processors we found above over twenty trials with 3 warmup trials,
 and calculated the average for start, middle and end game states. Looking at the data, for all three game
 states, Jamboree performs the best, followed by Alpha beta, parallel minimax, and mini max. This is the result
-of the optimization caused by pruning, and the move ordering we implemented to get Jamboree to beat clamps. 
+of the optimization caused by pruning, and the parallelism present in the code. 
 Minimax, without any optimization through parallelism or pruning, performed significantly worse than the other
 three algorithms.
 
 Alpha beta also performed better all across the game states than Parallel minimax. This leads me to believe that
-pruning is more effective at optimization than parallelism in this situation. The combination of pruning and parallelism,
+pruning is more effective at optimization than parallelism in this situation, most likely because it eliminates more board states than the parallel program can speed up running all the board states. The combination of pruning and parallelism,
 or the lack of both, explains why Jamboree (pruning and parallelism) performed the best, and why minimax (none) performed the worst.
 
 
