@@ -81,12 +81,12 @@ entry in the table surprising?  Based ONLY on this table, do you feel
 like there is a substantial difference between the four algorithms?
 
 We counted the number of nodes visited for each fen (64 fens in total),
-and totalled them up. I then divided it by the number of fens to get the
+and totaled them up. I then divided it by the number of fens to get the
 average nodes, which is what is represented in the table and graph above.
 Looking at minimax and alphabeta for 3-ply, I was pleasantly surprised that
 my estimates were really close. The minimax and parallel minimax pair are significantly
 worse from the alphabeta and jamboree pair. This is because alpha beta removes
-unnesssary nodes to be visited, which is the reason for the significant difference
+unnecessary nodes to be visited, which is the reason for the significant difference
 in number of nodes visited. It makes sense that minimax and parallel minimax
 visits the same amount of nodes, as the optimization for parallel minimax is using parallelism
 to reduce runtime, not reducing the number of nodes itself, unlike alphabeta and jamboree,
@@ -112,7 +112,7 @@ of a game, and a board about 5 moves from the end of the game.  The exact boards
 you choose don't matter (although, you shouldn't choose a board already in
 checkmate), but they should be different.
 
-With white using depth 5 and black using depth 4.
+With white using depth 5 and black using depth 5.
 
 Board:
 	beg (line 0): rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq
@@ -129,8 +129,7 @@ your three boards.
 ![](Cutoff_Jamboree.png)
 ![](Cutoff_Parallel.png)
 
-The data shows that for all three board positions, Jamboree performed significantly better than Parallel Minimax.
-Jamboree performed the best when cutoff = 2, while Minimax performed the best when cutoff = 3.
+The data we collected from 10 trials each shows that for all three board positions, Jamboree performed significantly better than Parallel Minimax. Jamboree performed the best when cutoff = 2, while Minimax performed the best when cutoff = 3.
 My guess is that since Jamboree prunes and parallel minimax do not, Jamboree is more efficient and requires
 a lower cutoff than parallel minimax. 
 The cutoffs also seem to affect parallel minimax on a larger scale as compared to jamboree, the difference between
@@ -155,9 +154,8 @@ of the three boards.
 ![](Processors_Jamboree.png)
 ![](Processors_Parallel.png)
 
-We calculated the average runtime over 10 trials for the number of processors in increments of 4 up to 20,
-the increments of 1 up to 32 for early, middle, and end game states. From the data table, we see that the number
-of processors that results in the best runtime for each game state is 28, 29, 20 respectively (early, middle, end) for
+We calculated the average runtime over 10 trials for the number of processors in increments of 4 up until the previous
+speed was faster than the current. Then we incremented over the 4 core-counts in between the previous and current and found the best speed for early, middle, and end game states. From the data table, we see that the number of processors that results in the best runtime for each game state is 28, 29, 20 respectively (early, middle, end) for
 Jamboree, and 32, 30, 28 for parallel minimax.
  
 However, what is more important is that for all three game states, their runtimes decrease until about 12 processors, 
@@ -182,7 +180,7 @@ Plot your results and discuss anything surprising about your results here.
 ![](FinalComparison.png)
 ![](Comparison.png)
 
-We used the optimal cutoff and number of processors we found above over twenty trials with 3 warmpup trials,
+We used the optimal cutoff and number of processors we found above over twenty trials with 3 warmup trials,
 and calculated the average for start, middle and end game states. Looking at the data, for all three game
 states, Jamboree performs the best, followed by Alpha beta, parallel minimax, and mini max. This is the result
 of the optimization caused by pruning, and the move ordering we implemented to get Jamboree to beat clamps. 

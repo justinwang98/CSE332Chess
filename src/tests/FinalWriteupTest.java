@@ -49,8 +49,8 @@ public class FinalWriteupTest {
     
     
     public static double run(Searcher type, String startPos) {
-        final int NUM_TESTS = 5;
-        final int NUM_WARMUP = 2;
+        final int NUM_TESTS = 20;
+        final int NUM_WARMUP = 3;
         
         double totalTime = 0;
         for (int i = 0; i < NUM_TESTS; i++) {

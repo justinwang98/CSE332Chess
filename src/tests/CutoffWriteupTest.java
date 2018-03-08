@@ -26,8 +26,8 @@ public class CutoffWriteupTest {
     }
     
     public static void run(String startPos, int cutoff) {
-        final int NUM_TESTS = 5;
-        final int NUM_WARMUP = 2;
+        final int NUM_TESTS = 10;
+        final int NUM_WARMUP = 3;
         
         double totalTime = 0;
         for (int i = 0; i < NUM_TESTS; i++) {
